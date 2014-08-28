@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry output="main/target/classes" kind="src" path="main/src/main/java"/>
+	<classpathentry output="extention/target/classes" kind="src" path="extention/src/main/java"/>
+	<classpathentry output="main/target/classes" kind="src" path="main/src/main/resources"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="distribute/lib/s2-extension-2.3.10.jar"/>
+	<classpathentry kind="lib" path="distribute/lib/s2-framework-2.3.10.jar"/>
+	<classpathentry kind="lib" path="distribute/lib/s2-tiger-2.3.9.jar"/>
+	<classpathentry kind="lib" path="distribute/lib/concurrent.jar"/>
+	<classpathentry sourcepath="misc/jakarta-log4j-1.2.8.zip" kind="lib" path="distribute/lib/log4j-1.2.8.jar"/>
+	<classpathentry kind="lib" path="distribute/lib/aopalliance-1.0.jar"/>
+	<classpathentry sourcepath="misc/commons-logging-1.0.4-src.zip" kind="lib" path="distribute/lib/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="lib" path="distribute/lib/geronimo-j2ee_1.4_spec-1.0.jar"/>
+	<classpathentry kind="lib" path="distribute/lib/javassist-3.0.jar"/>
+	<classpathentry kind="lib" path="distribute/lib/junit-3.8.1.jar"/>
+	<classpathentry kind="lib" path="distribute/lib/ognl-2.6.5.jar"/>
+	<classpathentry kind="lib" path="distribute/lib/poi-2.5.1-final-20040804.jar"/>
+	<classpathentry output="example/target/bootstrap" kind="src" path="example/src/bootstrap"/>
+	<classpathentry output="distribute/classes" kind="src" path="example/src/resource"/>
+	<classpathentry output="distribute/classes" kind="src" path="example/src/socklet"/>
+	<classpathentry output="distribute/classes" kind="src" path="example/src/vmap"/>
+	<classpathentry kind="output" path="main/target/classes"/>
+</classpath>

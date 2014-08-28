@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="Shift_JIS"?>
+<!DOCTYPE components PUBLIC "-//SEASAR2.1//DTD S2Container//EN"
+	"http://www.seasar.org/dtd/components21.dtd">
+<components namespace="VMap">
+	
+	<!--
+	    VirtualMap
+	  -->
+	<component	name  = "Entrance"
+				class = "jp.wda.vmap.DefaultAreaControlerImpl">
+	</component>
+	
+	
+	<component	name  = "root"
+				class = "jp.wda.vmap.RootControlerImpl">
+		<initMethod name="addChild"><arg>"Entrance"</arg></initMethod>
+		
+		<initMethod name="initialize"/>
+	</component>
+	
+</components>

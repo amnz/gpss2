@@ -1,0 +1,11 @@
+/.hg/
+/.metadata/
+
+/distribute/classes/
+/distribute/logs/
+/documents/
+/release/
+
+/main/target/
+/extention/target/
+/example/target/

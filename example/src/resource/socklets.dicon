@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="Shift_JIS"?>
+<!DOCTYPE components PUBLIC "-//SEASAR2.1//DTD S2Container//EN"
+	"http://www.seasar.org/dtd/components21.dtd">
+<components>
+	<include path="vmap.dicon"/>
+	<!--
+	  *****************************************************************************************************************
+	  * 
+	  * 配備するSocklet一覧
+	  * 
+	  * HotSwapを有効にするためには、必ずaddChildする前にcomponent定義する必要があります。
+	  * 
+	  *****************************************************************************************************************
+	  -->
+	
+	<!--
+	    単純なエコーサービスSocklet
+	  -->
+	<component	name  = "echoback"
+				class = "jp.wda.g2.examples.SimpleEcho" />
+	
+	<!--
+	    海戦ゲーム
+	  -->
+	<component	name  = "nv_area1"
+				class = "jp.wda.g2.examples.navalbattle.BattleAreaImpl">
+		<property name="seaArea">"横島海域"</property>
+	</component>
+	
+	<component	name  = "nv_area2"
+				class = "jp.wda.g2.examples.navalbattle.BattleAreaImpl">
+		<property name="seaArea">"縦島海域"</property>
+	</component>
+	
+	<component	name  = "NavalBattle_Admin"
+				class = "jp.wda.g2.examples.navalbattle.AreaAdministrator">
+		<initMethod name="addChild"><arg>"nv_area1"</arg></initMethod>
+		<initMethod name="addChild"><arg>"nv_area2"</arg></initMethod>
+		
+		<initMethod name="initialize"/>
+	</component>
+	
+</components>

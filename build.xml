@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="GPSS2 with DI Container" default="all" basedir=".">
+	<property name="ver" value="2.0.1"/>
+	
+	<property name="fwjarfile"  value="g2-framework.jar" />
+	<property name="exjarfile"  value="g2-extention.jar" />
+	<property name="bsjarfile"  value="bootstrap.jar" />
+	
+	<property name="distribute" value="./distribute" />
+	<property name="jarloc"     value="${distribute}/lib" />
+	
+	<property name="releasedir" value="./release" />
+	<property name="zip_bin"    value="g2-${ver}.zip" />
+	<property name="zip_src"    value="g2-${ver}-src.zip" />
+	<property name="zip_doc"    value="g2-${ver}-doc.zip" />
+	
+	<property name="documentdir" value="./documents" />
+	<property name="javadocdir"  value="${documentdir}/api" />
+	
+	
+	
+	<target name="all" depends="jar-framework,jar-extention,jar-bootstrap">
+	</target>
+	
+	
+	
+	<target name="archive">
+		<antcall target="jar-framework"/>
+		<antcall target="jar-extention"/>
+		<antcall target="jar-bootstrap"/>
+		<antcall target="javadoc"/>
+		
+		<delete file="${releasedir}/${zip_bin}" />
+		<delete file="${releasedir}/${zip_src}" />
+		<delete file="${releasedir}/${zip_doc}" />
+		
+		<zip zipfile="${releasedir}/${zip_bin}">
+			<fileset dir="${distribute}" excludes="logs/*" />
+		</zip>
+		
+		<zip zipfile="${releasedir}/${zip_src}">
+			<fileset dir="./">
+				<exclude name="misc/**"/>
+				<exclude name="release/*"/>
+				<exclude name="distribute/logs/*"/>
+				
+				<exclude name="*.exe"/>
+			</fileset>
+		</zip>
+		
+		<zip zipfile="${releasedir}/${zip_doc}">
+			<fileset dir="${documentdir}" />
+		</zip>
+	</target>
+	
+	<target name="javadoc">
+		<delete dir="${javadocdir}" excludes=".svn" />
+		<delete dir="${javadocdir}/jp" />
+		
+		<javadoc destdir="${javadocdir}" access="protected" use="true" notree="false"
+			 nonavbar="false" noindex="false" splitindex="true"
+			 author="true" version="true" nodeprecatedlist="false"
+			 nodeprecated="false"
+			 packagenames="jp.wda.gpss.*,jp.wda.g2.*"
+			 sourcepath="main/src/main/java;extention/src/main/java"
+			 classpath="
+			 	bin;
+			 	${jarloc}/commons-logging-1.0.4.jar;
+			 	${jarloc}/s2-extension-2.3.7.jar;
+			 	${jarloc}/s2-framework-2.3.7-20060407.jar;
+			 	${jarloc}/s2-tiger-2.3.4.jar;
+			 " doctitle="FlashMX用 汎用ソケットサーバ"/>
+	</target>
+	
+	
+	<target name="jar-framework">
+		<delete file="${jarloc}/${fwjarfile}" />
+		<jar    destfile="${jarloc}/${fwjarfile}" 
+			    basedir="./main/target/classes"
+			    index="true">
+			<manifest>
+				<attribute name="Extension-Name"         value="g2-framework"/>
+				
+				<attribute name="Specification-Title"    value="General Purpose Socket Server - GPSS -"/>
+				<attribute name="Specification-Version"  value="2"/>
+				<attribute name="Specification-Vendor"   value="Project GPSS"/>
+				
+				<attribute name="Implementation-Title"   value="g2-framework"/>
+				<attribute name="Implementation-Version" value="${ver}"/>
+				<attribute name="Implementation-Vendor"  value="Project GPSS"/>
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="jar-extention">
+		<delete file="${jarloc}/${exjarfile}" />
+		<jar    destfile="${jarloc}/${exjarfile}" 
+			    basedir="./extention/target/classes"
+			    index="true">
+			<manifest>
+				<attribute name="Extension-Name"         value="g2-extention"/>
+				
+				<attribute name="Specification-Title"    value="General Purpose Socket Server - GPSS -"/>
+				<attribute name="Specification-Version"  value="2"/>
+				<attribute name="Specification-Vendor"   value="Project GPSS"/>
+				
+				<attribute name="Implementation-Title"   value="g2-extention"/>
+				<attribute name="Implementation-Version" value="${ver}"/>
+				<attribute name="Implementation-Vendor"  value="Project GPSS"/>
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="jar-bootstrap">
+		<delete file="${distribute}/${bsjarfile}" />
+		
+		<jar    destfile="${distribute}/${bsjarfile}" 
+			    basedir="./example/target/bootstrap"
+			    index="true">
+			<manifest>
+				<attribute name="Main-Class" value="jp.wda.g2.standalone.Bootstrap"/>
+				<attribute name="Class-Path" value="classes"/>
+			</manifest>
+		</jar>
+		
+		<!--
+			exewrap http://www.ne.jp/asahi/web/ryo/exewrap/
+			
+			Copyright (C) 2005-2008 HIRUKAWA Ryo. All rights reserved.
+
+			ソースコード形式であれバイナリ形式であれ、変更の有無に関わらず、以下の条件を満たす限りにおいて、再配布および使用を許可します:
+
+			1. ソースコード形式で再配布する場合、上記著作権表示、 本条件書および下記責任限定規定を必ず含めてください。
+
+			2. バイナリ形式で再配布する場合、上記著作権表示、本条件書および下記責任限定規定を、 配布物とともに提供される文
+			書 および/または 他の資料に必ず含めてください。
+
+			本ソフトウェアの実行により生成されたファイルの利用および配布について一切の制限を行いません。上記著作権表示、本
+			条件書、下記責任限定規定を含まずに、本ソフトウェアの実行により生成されたファイルを完全に自由に利用および配布す
+			ることができます。
+
+			本ソフトウェアは HIRUKAWA Ryo によって、"現状のまま"提供されるものとします。本ソフトウェアについては、明示黙示
+			を問わず、商用品として通常そなえるべき品質をそなえているとの保証も、特定の目的に適合するとの保証を含め、何の保
+			証もなされません。事由のいかんを問わず、損害発生の原因いかんを問わず、且つ、責任の根拠が契約であるか厳格責任で
+			あるか (過失その他) 不法行為であるかを問わず、HIRUKAWA Ryo も寄与者も、仮にそのような損害が発生する可能性を知ら
+			されていたとしても、本ソフトウェアの使用から発生した直接損害、間接損害、偶発的な損害、特別損害、懲罰的損害また
+			は結果損害のいずれに対しても (代替品または サービスの提供; 使用機会、データまたは利益の損失の補償;または、業務
+			の中断に対する補償を含め) 責任をいっさい負いません。
+		-->
+		<exec executable="./exewrap.exe" dir=".">
+			<arg value="-o"/><arg value="${distribute}/gpss2.exe"/>
+			<arg value="-i"/><arg value="${documentdir}/logo_simple.ico"/>
+			<arg value="-v"/><arg value="${ver}" />
+			<arg value="-j"/><arg value="${distribute}/${bsjarfile}" />
+		</exec>
+	</target>
+	
+</project>
