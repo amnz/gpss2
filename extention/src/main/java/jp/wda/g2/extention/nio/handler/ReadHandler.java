@@ -1,7 +1,7 @@
 /* *****************************************************************************
- * 
+ *
  * Copyright(C) The GPSS Project Team and the Others. All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -10,10 +10,10 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
- * 
+ *
  * ***************************************************************************** */
 package jp.wda.g2.extention.nio.handler;
 
@@ -34,18 +34,18 @@ import jp.wda.g2.system.GPSSConstants;
 import jp.wda.gpss.util.Logger;
 
 /**
- * 
- * 
+ *
+ *
  * <div style="font-weight:bold; font-size:10.5pt;">
  * [変更履歴]
  * </div><dl style="margin:0px; border:1px solid #eee; padding:10px; font-size:10pt;">
- * 
+ *
  * <dt> 2.0.0-a1 </dt><dd> 2006/02/23 16:00:00 導入 </dd>
- * 
+ *
  * </dl>
  * @version	2.0.0-a1
  * @since		2.0.0-a1
- * 
+ *
  * @author		A M O I
  */
 public class ReadHandler implements Runnable, Connection {
@@ -55,14 +55,14 @@ public class ReadHandler implements Runnable, Connection {
 
 	/**
 	 * デフォルトの設定を用いてオブジェクトを構築するコンストラクタ
-	 * 
+	 *
 	 */
 	public ReadHandler(SocketChannel channel, SocketReactor reactor) {
 		super();
-		
+
 		this.channel = channel;
 		this.reactor = reactor;
-		
+
 		this.buffer        = ByteBuffer.allocateDirect(BUFFER_SIZE);
 		this.messageBuffer = new ByteBufferList(BUFFER_SIZE);
 	}
@@ -73,7 +73,7 @@ public class ReadHandler implements Runnable, Connection {
 
 	/** ロガー */
 	private final Logger logger = Logger.getLogger(GPSSConstants.SYSTEMLOG_CATEGORY);
-	
+
 	/**  */
 	private SelectionKey key;
 	/**
@@ -82,18 +82,18 @@ public class ReadHandler implements Runnable, Connection {
 	 */
 	void register(Selector selector) throws IOException{
 		this.key = channel.register(selector, SelectionKey.OP_READ);
-		
+
 		recordActive();
 		this.key.attach(this);
 	}
-	
+
 	/**
 	 * メッセージバッファ
 	 */
 	private ByteBuffer buffer;
 	private ByteBufferList messageBuffer;
 	private static final int BUFFER_SIZE = 1024;
-	
+
 	/**
 	 * 最終活動時間
 	 */
@@ -104,7 +104,7 @@ public class ReadHandler implements Runnable, Connection {
 	private void recordActive() {
 		lastAct = System.currentTimeMillis();
 	}
-	
+
 	// プロパティ ///////////////////////////////////////////////////////////////////////
 	//                                                                      Properties //
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -140,7 +140,7 @@ public class ReadHandler implements Runnable, Connection {
 	 * @param s 設定値<BR>
 	 */
 	public void setClient(SocketProcessor s){ client = s; }
-	
+
 	// インスタンスメソッド /////////////////////////////////////////////////////////////
 	//                                                                Instance Methods //
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -148,7 +148,7 @@ public class ReadHandler implements Runnable, Connection {
 	public void run() {
 		int length = -1;
 		Throwable th = null;
-		
+
 		try{
 			length = readChannel();
 		} catch (ClosedChannelException e) {
@@ -167,33 +167,33 @@ public class ReadHandler implements Runnable, Connection {
 			if((length < 0 || th != null) && !client.isTerminated()){ client.terminate(); }
 		}
 	}
-	
+
 	private int readChannel() throws IOException{
 		int length = -1;
-		
+
 		buffer.clear();
 		while (!client.isTerminated() && (length = channel.read(buffer)) > 0) {
 			recordActive();
 			buffer.flip();
-			
+
 			while (buffer.hasRemaining()) {
 				byte b = buffer.get();
 				if (b == 0) {
 					CommandHandler command = new CommandHandler(client, messageBuffer.toByteBuffer());
 					reactor.execute(command);
-				
+
 					messageBuffer.clear();
 					continue;
 				}
-				
+
 				messageBuffer.put(b);
 			}
 			buffer.clear();
 		}
-		
+
 		return length;
 	}
-	
+
 	// インスタンスメソッド /////////////////////////////////////////////////////////////
 	//                                                                Instance Methods //
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -206,7 +206,7 @@ public class ReadHandler implements Runnable, Connection {
 			client.terminate();
 			return false;
 		}
-		
+
 		ByteBuffer buffer = Charset.forName(client.getEncoding()).encode(message + "\0");
 		try {
 			channel.write(buffer);
@@ -217,7 +217,7 @@ public class ReadHandler implements Runnable, Connection {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * チャンネルを閉じる
 	 */
@@ -242,14 +242,14 @@ public class ReadHandler implements Runnable, Connection {
 			client.terminate("Connection timeout..");
 		}
 	}
-	
+
 	/**
 	 * タイムアウトしているかどうかチェック
 	 * @return
 	 */
 	public boolean isInactive() {
 		if(client.isTerminated()){ return false; }
-		
+
 		long timeout = client.getTimeout();
 		if (timeout <= 0) {
 			return false;
@@ -263,7 +263,7 @@ public class ReadHandler implements Runnable, Connection {
 	/////////////////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * メッセージバッファ用の内部クラス 
+	 * メッセージバッファ用の内部クラス
 	 */
 	private class ByteBufferList {
 		private ArrayList<ByteBuffer> list;
@@ -294,6 +294,7 @@ public class ReadHandler implements Runnable, Connection {
 		 * バッファに一括追加書き込み
 		 * @param bb
 		 */
+		@SuppressWarnings("unused")
 		public void put(ByteBuffer bb) {
 			while (bb.hasRemaining()) {
 				put(bb.get());

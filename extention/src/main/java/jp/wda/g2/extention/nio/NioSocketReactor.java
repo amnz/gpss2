@@ -1,7 +1,7 @@
 /* *****************************************************************************
- * 
+ *
  * Copyright(C) The GPSS Project Team and the Others. All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -10,10 +10,10 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
- * 
+ *
  * ***************************************************************************** */
 package jp.wda.g2.extention.nio;
 
@@ -46,18 +46,18 @@ import org.seasar.framework.container.S2Container;
 import org.seasar.framework.util.StringUtil;
 
 /**
- * 
- * 
+ *
+ *
  * <div style="font-weight:bold; font-size:10.5pt;">
  * [変更履歴]
  * </div><dl style="margin:0px; border:1px solid #eee; padding:10px; font-size:10pt;">
- * 
+ *
  * <dt> 2.0.0-a1 </dt><dd> 2006/02/23 16:00:00 導入 </dd>
- * 
+ *
  * </dl>
  * @version	2.0.0-a1
  * @since		2.0.0-a1
- * 
+ *
  * @author		A M O I
  */
 public class NioSocketReactor extends AbstractSocketReactor{
@@ -67,7 +67,7 @@ public class NioSocketReactor extends AbstractSocketReactor{
 
 	/**
 	 * デフォルトの設定を用いてオブジェクトを構築するコンストラクタ
-	 * 
+	 *
 	 */
 	public NioSocketReactor() {
 		super();
@@ -106,7 +106,7 @@ public class NioSocketReactor extends AbstractSocketReactor{
 	 */
 	public ExecutorService getPool(){ return executor; }
 	/**
-	 * 
+	 *
 	 * @param r
 	 */
 	public void execute(Runnable r){
@@ -114,27 +114,27 @@ public class NioSocketReactor extends AbstractSocketReactor{
 	}
 
 	/* ***********************************************************************>> */
-	
+
 	/**
-	 * 
+	 *
 	 * @param container
 	 * @param client
 	 */
 	public void notifyAcceptance(SockletContainer container, SocketProcessor client){
 		super.notifyAcceptance(container, client);
-		
+
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param container
 	 * @param client
 	 */
 	public void notifyDesertion(SockletContainer container, SocketProcessor client){
 		super.notifyDesertion(container, client);
-		
+
 	}
-	
+
 	// プロパティ ///////////////////////////////////////////////////////////////////////
 	//                                                                      Properties //
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -154,17 +154,17 @@ public class NioSocketReactor extends AbstractSocketReactor{
 	/**
 	 * タイムアウトしたクライアントを検査する巡回間隔をミリ秒で設定します。<BR>
 	 * デフォルトは10秒です。
-	 * 
+	 *
 	 * @param s 設定値<BR>
 	 */
 	public void setSweeperDelay(long s){ sweeperDelay = s; }
-	
+
 	// インスタンスメソッド /////////////////////////////////////////////////////////////
 	//                                                                Instance Methods //
 	/////////////////////////////////////////////////////////////////////////////////////
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public void accept(){
 		try{
@@ -173,17 +173,17 @@ public class NioSocketReactor extends AbstractSocketReactor{
 			syslog.errormessage("EGSS00001", ex);
 			return;
 		}
-		
+
 		syslog.infomessage("IGSS00001");
-		
+
 		ScheduledExecutorService sweeperExecutor = Executors.newSingleThreadScheduledExecutor();
 		sweeperExecutor.scheduleWithFixedDelay(
 				new SleeperSweeper(selector), sweeperDelay, sweeperDelay, TimeUnit.MILLISECONDS);
-		
+
 		try{
 			while (true){
 				if(terminator){ break; }
-				
+
 				try{
 					select();
 				} catch (ClosedSelectorException cse) {
@@ -206,7 +206,7 @@ public class NioSocketReactor extends AbstractSocketReactor{
 			} catch (Exception e) {
 				;
 			}
-			
+
 			if (sweeperExecutor != null) { sweeperExecutor.shutdown(); }
 			if (executor != null)        { executor.shutdownNow();     }
 
@@ -217,11 +217,11 @@ public class NioSocketReactor extends AbstractSocketReactor{
 			this.terminated = true;
 		}
 	}
-	
+
 	private void openChannel() throws IOException{
 		this.serverChannel = ServerSocketChannel.open();
 		this.serverChannel.configureBlocking(false);
-		
+
 		ServerSocket serverSocket = serverChannel.socket();
 		serverSocket.bind(new InetSocketAddress(getPort()));
 
@@ -229,16 +229,16 @@ public class NioSocketReactor extends AbstractSocketReactor{
 		SelectionKey acceptKey = serverChannel.register(selector, SelectionKey.OP_ACCEPT);
 		acceptKey.attach(new AcceptHandler(acceptKey, this));
 	}
-	
+
 	private void select() throws IOException{
 		int n = selector.select(1000);
 		if(n == 0){ return; }
-		
+
 		Iterator<SelectionKey> it = selector.selectedKeys().iterator();
 		while(it.hasNext()){
 			SelectionKey key = it.next();
 			it.remove();
-			
+
 			dispatch(key);
 		}
 	}
@@ -250,7 +250,7 @@ public class NioSocketReactor extends AbstractSocketReactor{
 	private void dispatch(SelectionKey key) {
 		Runnable handler = (Runnable)(key.attachment());
 		if (handler == null) { return; }
-		
+
 		try {
 			handler.run();
 		} catch (Throwable e) {
@@ -258,20 +258,20 @@ public class NioSocketReactor extends AbstractSocketReactor{
 			syslog.error("", e);
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public synchronized void shutdown(){
 		if(terminator){ return; }
-		
+
 		getDefaultSocklet().destroyAllSocklets();
-		
+
 		SocketProcessor[] allclients = getDefaultSockletContainer().getAllClients();
 		for(int i = 0; i < allclients.length; i++){
 			allclients[i].terminate();
 		}
-		
+
 		terminator = true;
 		selector.wakeup();
 	}
@@ -289,34 +289,34 @@ public class NioSocketReactor extends AbstractSocketReactor{
 	 */
 	public Socklet getSystemCommandSocklet(){ return systemcommand; }
 	/**
-	 * 
+	 *
 	 * @param ipaddr
 	 */
 	public void systemCommandAcceptFrom(String ipaddr){
 		systemcommand.acceptFrom(ipaddr);
 	}
 	/**
-	 * 
+	 *
 	 * @param ipaddr
 	 */
 	public void systemCommandRejectFrom(String ipaddr){
 		systemcommand.rejectFrom(ipaddr);
 	}
-	
+
 	/**
-	 * 
-	 * 
-	 * 
+	 *
+	 *
+	 *
 	 */
 	private class SystemCommandSocklet extends AccessControledSocklet{
-		
+
 //		/** {@inheritDoc} */
 //		public boolean checkConnection(SocketProcessor client, SockletHolder socklets){
 //			boolean allow = super.checkConnection(client, socklets);
-//			
+//
 //			client.setAttributes(new Boolean(allow));
 //			client.send(allow ? "+OK" : "-Your connection is not allowed.");
-//			
+//
 //			return allow;
 //		}
 
@@ -333,60 +333,60 @@ public class NioSocketReactor extends AbstractSocketReactor{
 			client.send("-Your connection is not allowed.");
 			return false;
 		}
-		
+
 		/** {@inheritDoc} */
 		public void desert(SocketProcessor client, SockletLinkage linkage){
 		}
-		
+
 		/** {@inheritDoc} */
 		public void destroy(){
-			
+
 		}
-		
+
 		private boolean getAllowFlag(SocketProcessor client){
 			Boolean result = (Boolean)client.getAttributes();
 			return result == null ? false : result.booleanValue();
 		}
-		
+
 		/** {@inheritDoc} */
 		public Object doCommand(SocketProcessor client, ByteBuffer command, SockletLinkage linkage) throws GPSSException{
 			if(!getAllowFlag(client)){ throw new AccessDeniedException();}
-			
+
 			String cmd = Charset.forName(client.getEncoding()).decode(command).toString();
-			
+
 			if(StringUtil.isEmpty(cmd)){
 				client.terminate("+Good bye...");
 				return null;
 			}
-			
+
 			if(cmd.equals(SHUTDOWN)){
 				client.terminate();
 				shutdown();
-				
+
 				return null;
 			}
-			
+
 			if(cmd.equals(RESTART)){
 				String config = container.getPath();
-				
+
 				client.terminate();
 				shutdown();
 				while(!terminated){ ; }
-				
+
 				startServer(config);
-				
+
 				return null;
 			}
-			
+
 			client.send("-" + cmd + " is not found.");
-			
+
 			return null;
 		}
-		
+
 		public static final String RESTART  = "restart";
 		public static final String SHUTDOWN = "shutdown";
-		public static final String RELOAD   = "reload";
-		public static final String GETLIST  = "getSockletsList";
-		
+		@SuppressWarnings("unused") public static final String RELOAD   = "reload";
+		@SuppressWarnings("unused") public static final String GETLIST  = "getSockletsList";
+
 	}
 }
