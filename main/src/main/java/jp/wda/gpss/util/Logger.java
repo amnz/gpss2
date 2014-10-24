@@ -1,7 +1,7 @@
 /* *****************************************************************************
- * 
+ *
  * Copyright(C) The GPSS Project Team and the Others. All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -10,10 +10,10 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
- * 
+ *
  * ***************************************************************************** */
 package jp.wda.gpss.util;
 
@@ -23,23 +23,21 @@ import java.util.Map;
 
 import jp.wda.g2.exception.GPSSException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.seasar.framework.message.MessageFormatter;
 
 /**
- * 
- * 
+ *
+ *
  * <div style="font-weight:bold; font-size:10.5pt;">
  * [変更履歴]
  * </div><dl style="margin:0px; border:1px solid #eee; padding:10px; font-size:10pt;">
- * 
+ *
  * <dt> 2.0.0-a1 </dt><dd> 2006/02/23 16:00:00 導入 </dd>
- * 
+ *
  * </dl>
  * @version	2.0.0-a1
  * @since		2.0.0-a1
- * 
+ *
  * @author		A M O I
  */
 public final class Logger {
@@ -48,11 +46,11 @@ public final class Logger {
 	/////////////////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * 
-	 * @param 
+	 *
+	 * @param
 	 */
 	private Logger(String name) {
-		log = LogFactory.getLog(name);
+		log = org.slf4j.LoggerFactory.getLogger(name);
 	}
 
 	// 内部フィールド定義 ///////////////////////////////////////////////////////////////
@@ -61,25 +59,25 @@ public final class Logger {
 
 	private static Map<String, Logger> loggerMap  = Collections.synchronizedMap(new HashMap<String, Logger>());
 
-	private Log log;
+	private org.slf4j.Logger log;
 
 	// クラスメソッド ///////////////////////////////////////////////////////////////////
 	//                                                                   Class Methods //
 	/////////////////////////////////////////////////////////////////////////////////////
-	
+
 	/**
-	 * 
-	 * @param clazz 
-	 * @return 
+	 *
+	 * @param clazz
+	 * @return
 	 */
 	public static final Logger getLogger(Class<?> clazz) {
 		return getLogger(clazz.getName());
 	}
-	
+
 	/**
-	 * 
-	 * @param name 
-	 * @return 
+	 *
+	 * @param name
+	 * @return
 	 */
 	public static final Logger getLogger(String name) {
 		Logger logger = (Logger) loggerMap.get(name);
@@ -89,72 +87,72 @@ public final class Logger {
 		}
 		return logger;
 	}
-	
+
 	// インスタンスメソッド /////////////////////////////////////////////////////////////
 	//                                                                Instance Methods //
 	/////////////////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public final boolean isDebugEnabled() { return log.isDebugEnabled(); }
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final boolean isInfoEnabled()  { return log.isInfoEnabled(); }
-	
+
 	// インスタンスメソッド /////////////////////////////////////////////////////////////
 	//                                                                Instance Methods //
 	/////////////////////////////////////////////////////////////////////////////////////
 
 	public final void debug(Object message, Throwable throwable) {
 		if (isDebugEnabled()) {
-			log.debug(message, throwable);
+			log.debug(String.valueOf(message), throwable);
 		}
 	}
 
 	public final void debug(Object message) {
 		if (isDebugEnabled()) {
-			log.debug(message);
+			log.debug(String.valueOf(message));
 		}
 	}
 
 	public final void info(Object message, Throwable throwable) {
 		if (isInfoEnabled()) {
-			log.info(message, throwable);
+			log.info(String.valueOf(message), throwable);
 		}
 	}
 
 	public final void info(Object message) {
 		if (isInfoEnabled()) {
-			log.info(message);
+			log.info(String.valueOf(message));
 		}
 	}
 
 	public final void warn(Object message, Throwable throwable) {
-		log.warn(message, throwable);
+		log.warn(String.valueOf(message), throwable);
 	}
 
 	public final void warn(Object message) {
-		log.warn(message);
+		log.warn(String.valueOf(message));
 	}
 
 	public final void error(Object message, Throwable throwable) {
-		log.error(message, throwable);
+		log.error(String.valueOf(message), throwable);
 	}
 
 	public final void error(Object message) {
-		log.error(message);
+		log.error(String.valueOf(message));
 	}
 
 	public final void fatal(Object message, Throwable throwable) {
-		log.fatal(message, throwable);
+		log.error(String.valueOf(message), throwable);
 	}
 
 	public final void fatal(Object message) {
-		log.fatal(message);
+		log.error(String.valueOf(message));
 	}
 
 	public final void log(Throwable throwable) {
@@ -184,7 +182,7 @@ public final class Logger {
 				log.error(message, throwable);
 				break;
 			case 'F':
-				log.fatal(message, throwable);
+				log.error(message, throwable);
 				break;
 			default:
 				throw new IllegalArgumentException(String.valueOf(messageType));
@@ -203,7 +201,7 @@ public final class Logger {
 		case 'E':
 			return log.isErrorEnabled();
 		case 'F':
-			return log.isFatalEnabled();
+			return log.isErrorEnabled();
 		default:
 			throw new IllegalArgumentException(String.valueOf(messageType));
 		}
@@ -254,7 +252,7 @@ public final class Logger {
 	}
 
 	public final void fatalmessage(Throwable throwable) {
-		log.fatal(MessageFormatter.getMessage("EGSS99999", null), throwable);
+		log.error(MessageFormatter.getMessage("EGSS99999", null), throwable);
 	}
 
 }
